@@ -9,6 +9,10 @@ namespace chain_of_responsibility.Models
     public IDiscount Discount { get; set; }
     public List<CartItem> Items { get; set; }
 
+    public Cart()
+    {
+      Items = new List<CartItem>();
+    }
     public double Total
     {
       get

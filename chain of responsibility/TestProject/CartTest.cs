@@ -9,19 +9,31 @@ namespace TestProject
   public class CartTest
   {
     [Fact]
-    public void Should_Return_100_When_Ten_Percent_Discount()
+    public void Should_Return_101_When_Ten_Percent_Discount()
     {
       Cart cart = new Cart();
 
       cart.Items.Add(new CartItem(100));
       cart.Items.Add(new CartItem(600));
-      cart.Items.Add(new CartItem(300));
+      cart.Items.Add(new CartItem(301));
+      cart.Discount = DiscountChain();
 
-      List<IDiscount> discount = new List<IDiscount>();
+      Assert.Equal(10.01, cart.Discount.Calculate(cart));
+    }
 
-      discount.Add(new DiscountForTotalMoreThan1000());
+    private IDiscount DiscountChain()
+    {
+      IDiscount discountMoreThan1000 = new DiscountForTotalMoreThan1000();
+      IDiscount discountMoreThan2000 = new DiscountForTotalMoreThan2000();
+      IDiscount discountMoreThan3000 = new DiscountForTotalMoreThan3000();
 
-      Assert.Equal(100, cart.Discount.Calculate(cart));
+      discountMoreThan1000.Next = discountMoreThan2000;
+      discountMoreThan2000.Next = discountMoreThan3000;
+      discountMoreThan3000.Next = new NoDiscount();
+
+      return discountMoreThan1000;
     }
   }
 }
+
+
